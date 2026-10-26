@@ -1,7 +1,7 @@
 import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-  var window: NSWindow!
+  private var window: NSWindow!
 
   func applicationDidFinishLaunching(_ notification: Notification) {
     let windowStyle: NSWindow.StyleMask = [
@@ -9,7 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       .closable,
       .miniaturizable,
       .resizable,
-      .fullSizeContentView
+      .fullSizeContentView,
     ]
 
     window = NSWindow(
@@ -24,36 +24,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     window.center()
     window.setFrameAutosaveName("MainEditorWindow")
 
-    let splitVC = MainSplitViewController()
-    window.contentViewController = splitVC
+    window.contentViewController = MainSplitViewController()
     window.makeKeyAndOrderFront(nil)
     NSApp.activate(ignoringOtherApps: true)
 
-    setupMenubar(splitVC: splitVC)
+    NSApp.mainMenu = MainMenu.build()
   }
 
   func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
     return true
-  }
-
-  private func setupMenubar(splitVC: MainSplitViewController) {
-    let mainMenu = NSMenu()
-
-    let viewMenuItem = NSMenuItem()
-    let viewMenu = NSMenu(title: "View")
-
-    let toggleSidebarItem = NSMenuItem(
-      title: "Toggle Sidebar",
-      action: #selector(MainSplitViewController.toggleSidebarPane(_:)),
-      keyEquivalent: "\\"
-    )
-    toggleSidebarItem.keyEquivalentModifierMask = .command
-    toggleSidebarItem.target = splitVC
-
-    viewMenu.addItem(toggleSidebarItem)
-    viewMenuItem.submenu = viewMenu
-    mainMenu.addItem(viewMenuItem)
-
-    NSApp.mainMenu = mainMenu
   }
 }

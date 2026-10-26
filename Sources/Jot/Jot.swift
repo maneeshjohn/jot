@@ -1,16 +1,15 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
 import AppKit
 
 @main
+@MainActor
 struct Jot {
-    static func main() {
-      let app = NSApplication.shared
-      app.setActivationPolicy(.regular)
-
-      let delegate = AppDelegate()
-      app.delegate = delegate
-
-      _ = NSApplicationMain(CommandLine.argc, CommandLine.unsafeArgv)
-    }
+  static func main() {
+    let app = NSApplication.shared
+    let delegate = AppDelegate()
+    app.delegate = delegate
+    // Required when running as a bare executable (no .app bundle / Info.plist)
+    // so the app gets a Dock icon and menu bar.
+    app.setActivationPolicy(.regular)
+    app.run()
+  }
 }

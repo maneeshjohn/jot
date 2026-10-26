@@ -1,8 +1,8 @@
 import AppKit
 
 final class MainSplitViewController: NSSplitViewController {
-  let sidebarVC = SidebarViewController()
-  let editorVC = EditorViewController()
+  private let sidebarVC = SidebarViewController()
+  private let editorVC = EditorViewController()
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -15,12 +15,8 @@ final class MainSplitViewController: NSSplitViewController {
     let editorItem = NSSplitViewItem(viewController: editorVC)
     editorItem.minimumThickness = 450
 
-    // Add split items in order (0 = Left, 1 = Right)
+    // Order matters: index 0 is the leading (left) pane.
     addSplitViewItem(sidebarItem)
     addSplitViewItem(editorItem)
-  }
-
-  @objc func toggleSidebarPane(_ sender: Any?) {
-    toggleSidebar(sender)
   }
 }

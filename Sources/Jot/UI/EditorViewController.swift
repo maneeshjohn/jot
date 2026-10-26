@@ -1,11 +1,15 @@
 import AppKit
 
 final class EditorViewController: NSViewController {
-  private var scrollView: NSScrollView!
-  var textView: NSTextView!
+  private let scrollView = NSTextView.scrollableTextView()
+
+  private var textView: NSTextView {
+    // `scrollableTextView()` always installs an NSTextView as the document view.
+    scrollView.documentView as! NSTextView
+  }
 
   override func loadView() {
-    self.view = NSView()
+    view = NSView()
   }
 
   override func viewDidLoad() {
@@ -14,9 +18,6 @@ final class EditorViewController: NSViewController {
   }
 
   private func setupEditorView() {
-    scrollView = NSTextView.scrollableTextView()
-    textView = scrollView.documentView as? NSTextView
-
     // Disable macOS smart replacements to prevent Markdown corruption
     textView.isAutomaticQuoteSubstitutionEnabled = false
     textView.isAutomaticDashSubstitutionEnabled = false
@@ -29,7 +30,6 @@ final class EditorViewController: NSViewController {
     textView.drawsBackground = false
     scrollView.drawsBackground = false
 
-    // Layout
     scrollView.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(scrollView)
 
@@ -37,7 +37,7 @@ final class EditorViewController: NSViewController {
       scrollView.topAnchor.constraint(equalTo: view.topAnchor),
       scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
       scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-      scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+      scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
     ])
   }
 }
