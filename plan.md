@@ -10,6 +10,7 @@ A minimalist, local-first AppKit Markdown editor built without Xcode using Swift
 * **Text Model:** Pure Markdown (`.md` files) stored on disk; no proprietary database.
 * **Build System:** Swift Package Manager (`Package.swift`) targeting macOS 13+.
 * **Dev Environment:** Zed + `sourcekit-lsp` + Terminal (`swift run`).
+* **Settings:** No settings UI. `~/.config/jot/config.json` (opened with `Cmd + ,`), live-reloaded on save.
 * **Backup:** Background Git commands executed via Swift `Process`.
 
 ---
@@ -18,23 +19,24 @@ A minimalist, local-first AppKit Markdown editor built without Xcode using Swift
 
 ### Week 1: Core AppKit Shell & Raw Editor
 
-- [ ] **SPM Setup & Window Initialization**
+- [x] **SPM Setup & Window Initialization**
   - Initialize the project with `swift package init --type executable`.
   - Configure `Package.swift` for macOS 13+ and add `apple/swift-markdown`.
   - Create `main.swift` and `AppDelegate.swift` programmatically.
   - Configure borderless window chrome (`hiddenTitleBar`, transparent titlebar, full-size content view).
-- [ ] **Dual-Pane Split Layout**
+- [x] **Dual-Pane Split Layout**
   - Implement `NSSplitViewController`.
   - Leading pane: Sidebar container for note lists and tags.
   - Trailing pane: Editor container.
-  - Map `Cmd + \` to collapse and expand the sidebar.
-- [ ] **Raw Editor Setup (`NSTextView`)**
+  - Map `Cmd + B` to collapse and expand the sidebar.
+- [x] **Raw Editor Setup (`NSTextView`)**
   - Wrap `NSTextView` in an `NSScrollView`.
   - Configure text attributes: monospaced/system font, custom line height, and paragraph spacing.
   - Disable smart quotes, smart dashes, and autocorrect to prevent syntax corruption.
-- [ ] **Local File I/O**
-  - Implement note directory selection (defaulting to `~/Notes` or user-selected folder).
+- [x] **Local File I/O**
+  - Implement note directory selection (defaulting to `~/Notes`, set via `notesDirectory` in `config.json`).
   - Add standard file actions: Open, Save, and Debounced Auto-save (1s after typing stops).
+  - New Note (`Cmd + N`), inline rename in the sidebar, Show in Finder, external changes picked up live.
 
 ---
 
@@ -83,14 +85,15 @@ A minimalist, local-first AppKit Markdown editor built without Xcode using Swift
   - Auto-commit and push on a 5-minute debounce after edits or when the app loses focus/terminates.
   - Add visual non-intrusive status (e.g., small dot in sidebar) indicating sync status (Clean, Uncommitted, Syncing, Error).
 - [ ] **Theme Architecture (10 Themes)**
-  - Create a unified `Theme` struct supporting background, sidebar, caret, text, and selection colors.
+  - [x] Unified `Theme` struct: editor (background, text, cursor, selection), sidebar (background, text, selection), markdown (heading1, heading, link, code, codeBackground, syntax). Missing colors are derived from the others.
+  - [x] Theme JSON format with hex colors (`#RRGGBB` / `#RRGGBBAA`), loaded from `~/.config/jot/themes/` or `Resources/Themes/`.
+  - [x] Dynamic theme switching without restarting (live reload of `config.json` and the active theme file).
+  - [x] Selected theme is stored in `config.json` (`"theme": "<file name>"`) instead of `UserDefaults`.
   - Bundle 10 JSON theme files in `Resources/Themes/`:
     - **Dark:** Catppuccin Mocha, Rosé Pine Moon, Kanagawa Dragon, One Dark, Darcula.
     - **Light:** Catppuccin Latte, Rosé Pine Dawn, Kanagawa Lotus, One Light, Solarized Light.
-  - Implement dynamic theme switching without restarting:
-    - Apply background and text colors to `NSTextView`, `NSScrollView`, and sidebar.
-    - Set `textView.insertionPointColor` to theme accent.
-    - Save selected theme to `UserDefaults`.
+  - [x] Sidebar and markdown colors are used by the note list and syntax highlighting.
+  - [x] **Raw Markdown syntax highlighting** (`MarkdownTokenizer` + `MarkdownHighlighter`): regex-based and incremental (restyles only edited lines unless a code fence/frontmatter changes). Headings (ATX + setext, scaled bold), bold/italic/strikethrough, inline code, fenced code blocks, links/URLs, lists/tasks (completed tasks struck through), quotes, tables, rules, frontmatter. Tokenizer covered by `Tests/JotTests` (`swift test`).
 
 ---
 
